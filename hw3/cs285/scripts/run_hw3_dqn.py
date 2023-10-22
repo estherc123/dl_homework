@@ -21,7 +21,27 @@ from cs285.infrastructure.replay_buffer import MemoryEfficientReplayBuffer, Repl
 from scripting_utils import make_logger, make_config
 
 MAX_NVIDEO = 2
+def compute_action_for_run_loop(observation, agent, epsilon):
+    # Use the agent's get_action method
+    action = agent.get_action(observation, epsilon)
+    return action
 
+def step_environment_for_run_loop(env, action):
+    # Step the environment with the given action
+    next_observation, reward, done, info = env.step(action)
+    return next_observation, reward, done, info
+
+def store_transition_for_run_loop(replay_buffer, observation, action, reward, next_observation, done):
+    # Store the transition in the replay buffer
+    replay_buffer.insert(observation, action, reward, next_observation, done)
+
+def sample_and_train_for_run_loop(agent, replay_buffer, batch_size, learning_starts):
+    # Sample from the replay buffer and train the DQN agent
+    if len(replay_buffer) >= learning_starts:
+        batch = replay_buffer.sample(batch_size)
+        update_info = agent.update(batch['obs'], batch['action'], batch['reward'], batch['next_obs'], batch['done'])
+        return update_info
+    return {}
 
 def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
     # set random seeds
@@ -89,23 +109,23 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
 
     for step in tqdm.trange(config["total_steps"], dynamic_ncols=True):
         epsilon = exploration_schedule.value(step)
-        
+
         # TODO(student): Compute action
-        action = ...
+        action = compute_action_for_run_loop(observation, agent, epsilon)
 
         # TODO(student): Step the environment
+
+        next_observation, reward, done, info = step_environment_for_run_loop(env, action)
 
         next_observation = np.asarray(next_observation)
         truncated = info.get("TimeLimit.truncated", False)
 
         # TODO(student): Add the data to the replay buffer
         if isinstance(replay_buffer, MemoryEfficientReplayBuffer):
-            # We're using the memory-efficient replay buffer,
-            # so we only insert next_observation (not observation)
-            ...
+            replay_buffer.insert(next_observation=next_observation[-1, ...])
         else:
-            # We're using the regular replay buffer
-            ...
+            store_transition_for_run_loop(replay_buffer, observation, action, reward, next_observation, done)
+
 
         # Handle episode termination
         if done:
@@ -119,13 +139,14 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
         # Main DQN training loop
         if step >= config["learning_starts"]:
             # TODO(student): Sample config["batch_size"] samples from the replay buffer
-            batch = ...
+            batch = replay_buffer.sample(config["batch_size"])
 
             # Convert to PyTorch tensors
             batch = ptu.from_numpy(batch)
 
             # TODO(student): Train the agent. `batch` is a dictionary of numpy arrays,
-            update_info = ...
+            update_info = agent.update(batch['obs'], batch['action'], batch['reward'], batch['next_obs'], batch['done'])
+
 
             # Logging code
             update_info["epsilon"] = epsilon
