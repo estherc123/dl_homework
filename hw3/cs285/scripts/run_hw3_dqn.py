@@ -117,13 +117,15 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
         # TODO(student): Step the environment
 
         next_observation, reward, done, info = step_environment_for_run_loop(env, action)
-
+        #print("dimension!!!!!!!!!!!!!!!!!!!!!!!------------", next_observation.ndim)
         next_observation = np.asarray(next_observation)
         truncated = info.get("TimeLimit.truncated", False)
+        next_observation = next_observation[-1, ...]
 
         # TODO(student): Add the data to the replay buffer
         if isinstance(replay_buffer, MemoryEfficientReplayBuffer):
-            replay_buffer.insert(next_observation = next_observation[-1, ...], action, reward, done)
+
+            replay_buffer.insert( action, reward,next_observation, done)
         else:
             store_transition_for_run_loop(replay_buffer, observation, action, reward, next_observation, done)
 
