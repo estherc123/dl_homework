@@ -123,7 +123,7 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
 
         # TODO(student): Add the data to the replay buffer
         if isinstance(replay_buffer, MemoryEfficientReplayBuffer):
-            replay_buffer.insert(next_observation, action, reward, done)
+            replay_buffer.insert(next_observation = next_observation[-1, ...], action, reward, done)
         else:
             store_transition_for_run_loop(replay_buffer, observation, action, reward, next_observation, done)
 
