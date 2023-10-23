@@ -49,7 +49,7 @@ class DQNAgent(nn.Module):
 
         # TODO(student): get the action from the critic using an epsilon-greedy strategy
         if np.random.rand() < epsilon:
-            action = np.random.randint(self.num_actions)
+            action = torch.tensor([np.random.randint(self.num_actions)], dtype=torch.int64)  # Convert to tensor
         else:
             q_values = self.critic(observation)
             action = torch.argmax(q_values, dim=-1)
@@ -81,7 +81,7 @@ class DQNAgent(nn.Module):
                 # Using the target network to determine the best action for the next state
                 next_q_values = next_qa_values.max(dim=-1).values
 
-            target_values = reward + (1 - done) * self.discount * next_q_values
+            target_values = reward + (1 - done.int()) * self.discount * next_q_values
 
         # Compute the Q-values using the main network
         qa_values = self.critic(obs)
@@ -121,5 +121,10 @@ class DQNAgent(nn.Module):
         Update the DQN agent, including both the critic and target.
         """
         # TODO(student): update the critic, and the target if needed
+            # Update the critic and get the stats
+        critic_stats = self.update_critic(obs, action, reward, next_obs, done)
 
+        # Check if it's time to update the target critic
+        if step % self.target_update_period == 0:
+            self.update_target_critic()
         return critic_stats

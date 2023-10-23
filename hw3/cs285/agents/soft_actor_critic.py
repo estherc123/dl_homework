@@ -134,10 +134,10 @@ class SoftActorCritic(nn.Module):
          - for clip-Q, clip to the minimum of the two critics' predictions.
 
         Parameters:
-            next_qs (torch.Tensor): Q-values of shape (num_critics, batch_size). 
+            next_qs (torch.Tensor): Q-values of shape (num_critics, batch_size).
                 Leading dimension corresponds to target values FROM the different critics.
         Returns:
-            torch.Tensor: Target values of shape (num_critics, batch_size). 
+            torch.Tensor: Target values of shape (num_critics, batch_size).
                 Leading dimension corresponds to target values FOR the different critics.
         """
 
@@ -237,10 +237,10 @@ class SoftActorCritic(nn.Module):
         """
         Compute the (approximate) entropy of the action distribution for each batch element.
         """
-
         # TODO(student): Compute the entropy of the action distribution.
         # Note: Think about whether to use .rsample() or .sample() here...
-        return ...
+
+        return  action_distribution.entropy()
 
     def actor_loss_reinforce(self, obs: torch.Tensor):
         batch_size = obs.shape[0]

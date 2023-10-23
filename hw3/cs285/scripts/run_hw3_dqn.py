@@ -39,7 +39,8 @@ def sample_and_train_for_run_loop(agent, replay_buffer, batch_size, learning_sta
     # Sample from the replay buffer and train the DQN agent
     if len(replay_buffer) >= learning_starts:
         batch = replay_buffer.sample(batch_size)
-        update_info = agent.update(batch['obs'], batch['action'], batch['reward'], batch['next_obs'], batch['done'])
+
+        update_info = agent.update(batch['observations'], batch['actions'], batch['rewards'], batch['next_observations'], batch['dones'])
         return update_info
     return {}
 
@@ -144,8 +145,9 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
             # Convert to PyTorch tensors
             batch = ptu.from_numpy(batch)
 
+            #print("here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", batch.keys())
             # TODO(student): Train the agent. `batch` is a dictionary of numpy arrays,
-            update_info = agent.update(batch['obs'], batch['action'], batch['reward'], batch['next_obs'], batch['done'])
+            update_info = agent.update(batch['observations'], batch['actions'], batch['rewards'], batch['next_observations'], batch['dones'], step)
 
 
             # Logging code
