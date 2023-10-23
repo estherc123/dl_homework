@@ -121,7 +121,8 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
         next_observation = np.asarray(next_observation)
         truncated = info.get("TimeLimit.truncated", False)
         next_observation = next_observation[-1, ...]
-
+        print("dimension----------------------", next_observation.ndim)
+        print("shape--------------------------", next_observation.shape)
         # TODO(student): Add the data to the replay buffer
         if isinstance(replay_buffer, MemoryEfficientReplayBuffer):
 

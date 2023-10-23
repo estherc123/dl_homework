@@ -122,6 +122,7 @@ class MemoryEfficientReplayBuffer:
             % self.max_framebuffer_size
         )
 
+        print("observation shape!!!!!!!!!!!!!!!!!", self.framebuffer[observation_framebuffer_idcs].shape)
         return {
             "observations": self.framebuffer[observation_framebuffer_idcs],
             "actions": self.actions[rand_indices],
