@@ -47,7 +47,7 @@ def collect_mbpo_rollout(
         ac = sac_agent.get_action(ob)
 
         # Get `next_ob` predictions from `mb_agent` (average ensemble predictions)
-        next_ob = mb_agent.predict_next_obs(ob, ac)
+        next_ob = np.mean([mb_agent.get_dynamics_predictions(i, ob, ac) for i in range(mb_agent.ensemble_size)])
 
         # Get the reward using `env.get_reward`
         rew = env.get_reward(ob, ac)
