@@ -33,7 +33,7 @@ class AWACAgent(DQNAgent):
         with torch.no_grad():
             # TODO(student): compute the actor distribution, then use it to compute E[Q(s, a)]
             next_actions_probs = self.actor(next_observations)
-            next_actions = next_action_probs.sample()
+            next_actions = next_actions_probs.sample()
 
             # Compute expected Q values for next states
             next_qa_values = self.critic(next_observations, next_actions).detach()
