@@ -110,8 +110,8 @@ class IQLAgent(AWACAgent):
         # TODO(student): Compute target values for V(s)
 
         # TODO(student): Update V(s) using the loss from the IQL paper
-        vs = self.value_critic(observations)
-        qa_values = self.target_critic(observations)
+        vs = self.value_critic(observationssssssssze(-1)
+                _values = self.target_critic(observations)
         q_values = qa_values.gather(1, actions.unsqueeze(-1)).squeeze(-1)
         target_values = q_values.detach()
 
